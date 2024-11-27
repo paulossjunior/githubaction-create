@@ -4,9 +4,10 @@ Este GitHub Action monitora alterações em um arquivo específico e cria automa
 
 ## 🚀 Como Usar
 
-1. Crie um diretório `.github/workflows` no seu repositório (se ainda não existir)
-2. Crie um arquivo `monitor-file.yml` dentro deste diretório
-3. Copie o código abaixo e cole no arquivo:
+1. Configure as permissões necessárias (veja a seção "Configuração de Permissões")
+2. Crie um diretório `.github/workflows` no seu repositório (se ainda não existir)
+3. Crie um arquivo `monitor-file.yml` dentro deste diretório
+4. Copie o código abaixo e cole no arquivo:
 
 ```yaml
 name: Monitor File Changes
@@ -46,13 +47,28 @@ jobs:
           git config --local user.name "GitHub Action"
           git add update.md
           git commit -m "docs: atualiza registro de modificação do arquivo"
+          git remote set-url origin https://x-access-token:${{'secrets.PAT'}}@github.com/${{github.repository}}
           git push
 ```
 
-## ⚙️ Configuração
+## ⚙️ Configuração de Permissões
 
-1. Substitua `caminho/para/seu/arquivo.ext` pelo caminho real do arquivo que você quer monitorar
-2. O Action irá monitorar tanto pushes quanto pull requests que modifiquem o arquivo especificado
+Existem duas maneiras de configurar as permissões necessárias para o Action:
+
+### Método 1: Workflow Permissions (Recomendado)
+1. No seu repositório do GitHub, vá para "Settings" (Configurações)
+2. Na barra lateral esquerda, clique em "Actions" dentro da seção "Security"
+3. Procure por "Workflow permissions" (Permissões de workflow)
+4. Selecione "Read and write permissions" (Permissões de leitura e escrita)
+5. Salve as alterações
+
+### Método 2: Personal Access Token (PAT)
+1. Vá para suas configurações do GitHub (clique no seu avatar > Settings)
+2. No menu lateral, vá para "Developer settings" > "Personal access tokens" > "Tokens (classic)"
+3. Gere um novo token com permissão de `repo`
+4. Copie o token gerado
+5. No seu repositório, vá para "Settings" > "Secrets and variables" > "Actions"
+6. Crie um novo secret chamado `PAT` e cole o token
 
 ## 📋 O que o Action faz
 
@@ -77,11 +93,9 @@ O arquivo `seu-arquivo.ext` foi atualizado em DD/MM/AAAA HH:MM:SS
 **Autor:** nome-do-usuario
 ```
 
-## 🔒 Permissões Necessárias
+## ⚠️ Solução de Problemas
 
-Para que o Action funcione corretamente, certifique-se de que:
-1. O workflow tem permissão para fazer commits no repositório
-2. O token do GitHub tem acesso de escrita ao repositório
+Se você encontrar o erro `Permission to [repository].git denied to github-actions[bot]`, significa que as permissões não estão configuradas corretamente. Siga os passos na seção "Configuração de Permissões" acima.
 
 ## 💡 Dicas
 
