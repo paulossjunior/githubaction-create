@@ -1,0 +1,38 @@
+name: Monitor File Changes
+
+on:
+  push:
+    paths:
+      - 'arquivo.txt'  # Substitua pelo caminho do seu arquivo
+  pull_request:
+    paths:
+      - 'arquivo.txt'  # Substitua pelo caminho do seu arquivo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+      
+      - name: Obter data atual
+        id: date
+        run: echo "date=$(date +'%d/%m/%Y %H:%M:%S')" >> $GITHUB_OUTPUT
+      
+      - name: Criar arquivo markdown com atualização
+        run: |
+          echo "# Atualização de Arquivo" > update.md
+          echo "" >> update.md
+          echo "O arquivo \`caminho/para/seu/arquivo.ext\` foi atualizado em ${{ steps.date.outputs.date }}" >> update.md
+          echo "" >> update.md
+          echo "**Commit:** ${{ github.sha }}" >> update.md
+          echo "**Autor:** ${{ github.actor }}" >> update.md
+      
+      - name: Commit do arquivo markdown
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add update.md
+          git commit -m "docs: atualiza registro de modificação do arquivo"
+          git push
